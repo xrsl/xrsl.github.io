@@ -1,0 +1,15 @@
+[project]
+name = "personal-site"
+version = "0.1.0"
+description = "Personal site built with MkDocs"
+readme = "README.md"
+requires-python = "==3.12.*"
+dependencies = [
+  "mkdocs>=1.6.0",
+  "mkdocs-material>=8.4.0",
+  "mkdocs-include-markdown-plugin>=6.2.2",
+  "mkdocs-autorefs>=1.2.0",
+]
+
+[tool.uv]
+package = false
