@@ -79,6 +79,9 @@ markdown_extensions:
       alternate_style: true
 
 plugins:
+  - blog:
+      blog_dir: blog
+      authors_file: blog/.authors.yml
   - include-markdown
   - search
   - autorefs
@@ -90,4 +93,5 @@ extra:
 
 nav:
   - Home: index.md
+  - Blog: blog/index.md
   - About: about.md
