@@ -9,6 +9,7 @@ dependencies = [
   "mkdocs-material>=8.4.0",
   "mkdocs-include-markdown-plugin>=6.2.2",
   "mkdocs-autorefs>=1.2.0",
+  "zensical>=0.0.15",
 ]
 
 [tool.uv]
