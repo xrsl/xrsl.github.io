@@ -4,10 +4,10 @@ ignorePaths = [
   "pyproject.toml",
   "zensical.toml",
   ".gitignore",
-  "cspell.toml",
 ]
 words = [
   "zensical",
+  "pyproject",
   "Justfile",
   "strikethrough",
   "Blockquotes",
