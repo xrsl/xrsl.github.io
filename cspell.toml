@@ -14,4 +14,13 @@ words = [
   "println",
   "infty",
   "arithmatex",
+  "typst",
+  "httpx",
+  "pydantic",
+  "Pydantic",
+  "pytest",
+  "venv",
+  "mydb",
+  "tomllib",
+  "taplo",
 ]
