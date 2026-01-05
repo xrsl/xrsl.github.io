@@ -15,4 +15,4 @@ repos:
     rev: v9.4.0
     hooks:
       - id: cspell # Spell check changed files
-
+        args: ["--config", "cspell.toml"]

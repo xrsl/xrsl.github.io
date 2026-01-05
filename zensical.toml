@@ -1,11 +1,3 @@
-# ============================================================================
-#
-# The configuration produced by default is meant to highlight the features
-# that Zensical provides and to serve as a starting point for your own
-# projects.
-#
-# ============================================================================
-
 [project]
 # The site_name is shown in the page header and the browser window title
 #
@@ -19,7 +11,7 @@ site_description = "A new project generated from the default template project."
 # The site_author attribute. This is used in the HTML head element.
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_author
-site_author = "<your name here>"
+site_author = "Resul Al"
 # The site_url is the canonical URL for your site. When building online
 # documentation you should set this.
 # Read more: https://zensical.org/docs/setup/basics/#site_url

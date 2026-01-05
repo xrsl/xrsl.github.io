@@ -1,0 +1,17 @@
+version = "0.2"
+ignorePaths = [
+  ".pre-commit-config.yaml",
+  "pyproject.toml",
+  "zensical.toml",
+  ".gitignore",
+  "cspell.toml",
+]
+words = [
+  "zensical",
+  "Justfile",
+  "strikethrough",
+  "Blockquotes",
+  "println",
+  "infty",
+  "arithmatex",
+]

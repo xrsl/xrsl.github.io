@@ -6,7 +6,7 @@ default:
     @just --list
 
 serve:
-    uv run mkdocs serve
+    uv run zensical serve
 
 build:
-    uv run mkdocs build    
+    uv run zensical build
