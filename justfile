@@ -13,3 +13,6 @@ build:
 
 spell:
     cspell . --config cspell.toml
+
+prek:
+    prek run --all-files

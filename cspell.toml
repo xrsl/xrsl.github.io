@@ -3,6 +3,7 @@ ignorePaths = [
   ".pre-commit-config.yaml",
   "pyproject.toml",
   "zensical.toml",
+  "justfile",
   ".gitignore",
   ".github/",
   ".claude/",
