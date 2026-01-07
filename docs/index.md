@@ -7,7 +7,7 @@ hide:
 
 # Hey, I'm Resul :wave:
 
-I'm a software engineer with a PhD in Process Systems Engineering. I build tools that help people make better decisions faster.
+I'm a software developer with a PhD in Process Systems Engineering. I build tools that help people make better decisions faster.
 
 Currently, I'm working on applying **GenAI to developer workflows** — building agentic systems that augment how we write code, manage applications, and automate tedious tasks.
 
