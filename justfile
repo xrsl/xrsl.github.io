@@ -10,3 +10,6 @@ serve:
 
 build:
     uv run zensical build
+
+spell:
+    cspell . --config cspell.toml

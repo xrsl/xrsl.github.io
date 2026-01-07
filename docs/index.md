@@ -1,165 +1,69 @@
 ---
-icon: lucide/rocket
+icon: lucide/home
+hide:
+  - navigation
+  - toc
 ---
 
-# Get started
+# Hey, I'm Resul :wave:
 
-For full documentation visit [zensical.org](https://zensical.org/docs/).
+I'm a software engineer with a PhD in Process Systems Engineering. I build tools that help people make better decisions faster.
 
-## Commands
+Currently, I'm working on applying **GenAI to developer workflows** — building agentic systems that augment how we write code, manage applications, and automate tedious tasks.
 
-- [`zensical new`][new] - Create a new project
-- [`zensical serve`][serve] - Start local web server
-- [`zensical build`][build] - Build your site
+---
 
-  [new]: https://zensical.org/docs/usage/new/
-  [serve]: https://zensical.org/docs/usage/preview/
-  [build]: https://zensical.org/docs/usage/build/
+## What I Write About
 
-## Examples
+<div class="grid cards" markdown>
 
-### Admonitions
+- :material-robot:{ .lg .middle } **GenAI & Agentic Workflows**
 
-> Go to [documentation](https://zensical.org/docs/authoring/admonitions/)
+  ***
 
-!!! note
+  Building AI-powered tools with Claude, Gemini, and pydantic-ai.
+  Prompt engineering, multi-model architectures, and structured outputs.
 
-    This is a **note** admonition. Use it to provide helpful information.
+- :material-file-document-outline:{ .lg .middle } **TOML-First Development**
 
-!!! warning
+  ***
 
-    This is a **warning** admonition. Be careful!
+  Using TOML, CUE, and schemas as the foundation for
+  configuration, data, and AI interactions.
 
-### Details
+- :material-code-braces:{ .lg .middle } **Developer Tooling**
 
-> Go to [documentation](https://zensical.org/docs/authoring/admonitions/#collapsible-blocks)
+  ***
 
-??? info "Click to expand for more info"
+  Typst for documents, Just for automation,
+  pre-commit for quality, uv for Python.
 
-    This content is hidden until you click to expand it.
-    Great for FAQs or long explanations.
+- :material-source-branch:{ .lg .middle } **Workflows & Automation**
 
-## Code Blocks
+  ***
 
-> Go to [documentation](https://zensical.org/docs/authoring/code-blocks/)
+  GitHub Actions, Git worktrees, CI/CD pipelines,
+  and making tedious tasks disappear.
 
-```python hl_lines="2" title="Code blocks"
-def greet(name):
-    print(f"Hello, {name}!") # (1)!
+</div>
 
-greet("Python")
-```
+---
 
-1.  > Go to [documentation](https://zensical.org/docs/authoring/code-blocks/#code-annotations)
+## Recent Posts
 
-    Code annotations allow to attach notes to lines of code.
+- :lucide-bot: [**Agentic Workflows**](agentic-workflows.md) — Building a self-improving application system with slash commands, subagents, and human-in-the-loop iteration.
 
-Code can also be highlighted inline: `#!python print("Hello, Python!")`.
+- :lucide-shuffle: [**Multi-Provider AI**](multi-provider-ai.md) — Building model-agnostic agents with pydantic-ai that work across Gemini, Claude, and Groq.
 
-## Content tabs
+- :lucide-workflow: [**The TOML-First Workflow**](toml-first-workflow.md) — How I built an AI-powered CV system with TOML, CUE, Typst, and pydantic-ai.
 
-> Go to [documentation](https://zensical.org/docs/authoring/content-tabs/)
+---
 
-=== "Python"
+## Find Me
 
-    ``` python
-    print("Hello from Python!")
-    ```
+<div class="grid" markdown>
 
-=== "Rust"
+[:fontawesome-brands-github: **GitHub** @xrsl](https://github.com/xrsl){ .md-button }
+[:fontawesome-brands-linkedin: **LinkedIn** /in/resulal](https://linkedin.com/in/resulal){ .md-button }
 
-    ``` rs
-    println!("Hello from Rust!");
-    ```
-
-## Diagrams
-
-> Go to [documentation](https://zensical.org/docs/authoring/diagrams/)
-
-```mermaid
-graph LR
-  A[Start] --> B{Error?};
-  B -->|Yes| C[Hmm...];
-  C --> D[Debug];
-  D --> B;
-  B ---->|No| E[Yay!];
-```
-
-## Footnotes
-
-> Go to [documentation](https://zensical.org/docs/authoring/footnotes/)
-
-Here's a sentence with a footnote.[^1]
-
-Hover it, to see a tooltip.
-
-[^1]: This is the footnote.
-
-## Formatting
-
-> Go to [documentation](https://zensical.org/docs/authoring/formatting/)
-
-- ==This was marked (highlight)==
-- ^^This was inserted (underline)^^
-- ~~This was deleted (strikethrough)~~
-- H~2~O
-- A^T^A
-- ++ctrl+alt+del++
-
-## Icons, Emojis
-
-> Go to [documentation](https://zensical.org/docs/authoring/icons-emojis/)
-
-- :sparkles: `:sparkles:`
-- :rocket: `:rocket:`
-- :tada: `:tada:`
-- :memo: `:memo:`
-- :eyes: `:eyes:`
-
-## Maths
-
-> Go to [documentation](https://zensical.org/docs/authoring/math/)
-
-$$
-\cos x=\sum_{k=0}^{\infty}\frac{(-1)^k}{(2k)!}x^{2k}
-$$
-
-!!! warning "Needs configuration"
-Note that MathJax is included via a `script` tag on this page and is not
-configured in the generated default configuration to avoid including it
-in a pages that do not need it. See the documentation for details on how
-to configure it on all your pages if they are more Maths-heavy than these
-simple starter pages.
-
-<script id="MathJax-script" async src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>
-  window.MathJax = {
-    tex: {
-      inlineMath: [["\\(", "\\)"]],
-      displayMath: [["\\[", "\\]"]],
-      processEscapes: true,
-      processEnvironments: true
-    },
-    options: {
-      ignoreHtmlClass: ".*|",
-      processHtmlClass: "arithmatex"
-    }
-  };
-</script>
-
-## Task Lists
-
-> Go to [documentation](https://zensical.org/docs/authoring/lists/#using-task-lists)
-
-- [x] Install Zensical
-- [x] Configure `zensical.toml`
-- [x] Write amazing documentation
-- [ ] Deploy anywhere
-
-## Tooltips
-
-> Go to [documentation](https://zensical.org/docs/authoring/tooltips/)
-
-[Hover me][example]
-
-[example]: https://example.com "I'm a tooltip!"
+</div>

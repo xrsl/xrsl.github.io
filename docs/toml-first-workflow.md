@@ -1,260 +1,414 @@
 ---
 icon: lucide/workflow
-date: 2026-01-05
+date: 2026-01-07
 ---
 
-# Embracing a TOML-First Workflow
+# The TOML-First Workflow: How I Built an AI-Powered CV Build System
 
-Over the past few months, I've shifted most of my configuration files from YAML and JSON to TOML. This post explains why and shares the patterns I've discovered.
+Over the holidays, I've built something I never expected: a full-stack job application system where TOML is the canonical truth. Not YAML, not JSON, not a database — TOML. This post explains the _why_ behind every decision, the problems I was actually solving, and the unexpected benefits that emerged.
 
-## The TOML Philosophy
+## The Problem I Was Actually Solving
 
-TOML stands for "Tom's Obvious, Minimal Language." The key word is **obvious**. When you read a TOML file, there should be no ambiguity about what it means.
+Let me be honest: I didn't set out to build a "TOML-first workflow." I set out to solve a very specific pain point: **applying to jobs is tedious, error-prone, and soul-crushing**.
 
-### The YAML Problem
+Every application needs:
 
-YAML has too many ways to express the same thing:
+1. A tailored CV emphasizing relevant experience
+2. A cover letter that doesn't sound generic
+3. Version tracking (what did I send to Company X?)
+4. The ability to iterate quickly on feedback
+
+My first attempts used Word documents. Then LaTeX. Both failed for the same reason: **content and presentation were coupled**. Changing a bullet point meant fighting with margins. Updating a date meant fixing page breaks.
+
+I needed to separate concerns completely.
+
+## Why TOML Won
+
+I evaluated several formats for the "source of truth" layer:
+
+### Why Not YAML?
+
+YAML looks clean but hides landmines:
 
 ```yaml
-# All of these are equivalent
-key: value
-key: "value"
-key: 'value'
+# Norway problem - is this a country or false?
+norway: NO  # → false
 
-# Arrays can be written multiple ways
+# Type coercion surprises
+version: 1.0  # Is this a string or float?
+port: 8080    # What about this?
+
+# Multiple ways to write the same thing
 items: [1, 2, 3]
 items:
   - 1
   - 2
   - 3
-
-# Booleans are a minefield
-debug: yes      # true
-debug: Yes      # true
-debug: YES      # true
-debug: true     # true
-debug: True     # true
-debug: on       # true
-norway: NO      # false (!)
 ```
 
-This flexibility creates confusion. Is `1.0` a string or a number? Is `no` a boolean or a string?
+When an AI model writes YAML, these ambiguities cause real bugs. I've had cover letters fail to build because an LLM wrote `yes` instead of `"yes"`.
 
-### The TOML Solution
+### Why Not JSON?
 
-TOML is explicit:
+JSON is unambiguous, but:
 
-```toml
-# Strings are quoted
-key = "value"
+- No comments (I need `#:schema` directives for editor support)
+- Verbose for humans to edit
+- Trailing comma errors are common
+- No multi-line strings without escaping
 
-# Numbers are not
-port = 8080
-version = 1.0
+### Why TOML?
 
-# Booleans are lowercase
-debug = true
-production = false
-
-# Arrays are always bracketed
-items = [1, 2, 3]
-
-# Dates are ISO 8601
-created = 2026-01-05T08:30:00Z
-```
-
-No ambiguity. No surprises.
-
-## Where I Use TOML
-
-### 1. Project Configuration
-
-My projects now use `pyproject.toml` for Python configuration:
+TOML eliminated entire categories of errors:
 
 ```toml
-[project]
-name = "my-project"
-version = "0.1.0"
-requires-python = ">=3.11"
+#:schema ../schema/schema.json
 
-dependencies = [
-    "httpx>=0.27.0",
-    "pydantic>=2.0.0",
-]
+[cv]
+name = "John Doe, PhD"
+headline = "Senior Software Engineer"
+email = "john.doe@example.com"
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=8.0.0",
-    "ruff>=0.1.0",
-]
-
-[tool.ruff]
-line-length = 100
-target-version = "py311"
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "N"]
-ignore = ["E501"]
-```
-
-Everything in one file, strongly typed, easy to read.
-
-### 2. Build Systems
-
-I use TOML for data files that feed into build systems. My CV is `cv.toml`, my site config is `zensical.toml`, even my spell-checker uses `cspell.toml`:
-
-```toml
-# cspell.toml
-version = "0.2"
-language = "en"
-
-words = [
-    "zensical",
-    "typst",
-    "toml",
-]
-
-ignorePaths = [
-    "node_modules",
-    ".venv",
-    "*.min.js",
+[[cv.experience]]
+company = "Acme Corp"
+position = "Senior Software Engineer"
+start_date = "2022-11"
+end_date = "present"
+highlights = [
+  "Built a unified data platform for analytics",
+  "Architected simulation engine for *5x* faster designs",
 ]
 ```
 
-### 3. Task Runners
+Key benefits:
 
-I pair TOML configs with [Just](https://github.com/casey/just) for task running:
+1. **Explicit types** — Strings are quoted, dates are ISO 8601, no surprises
+2. **Comments** — I can document schema directives and explain choices
+3. **Human-editable** — I can fix AI output by hand
+4. **Tooling** — `tombi format`, `taplo`, schema validation all work beautifully
 
-```justfile
-# Build CV
-cv:
-    typst compile cv.typ cv.pdf
+## The Architecture That Emerged
 
-# Build site
-site:
-    uv run zensical build
+What started as "TOML instead of YAML" became a full system with multiple components working together. Here's the data flow:
 
-# Deploy everything
-deploy: cv site
-    gh-pages deploy site/
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              JOB APPLICATION FLOW                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+   Job Posting URL                    GitHub Issue                  AI Analysis
+         │                                 │                              │
+         ▼                                 ▼                              ▼
+    ┌─────────┐    LLM extracts     ┌───────────┐    Career advisor   ┌───────────┐
+    │   URL   │ ──────────────────► │  Issue #N │ ─────────────────► │  Comment   │
+    └─────────┘   structured data   │  (tracks  │   posts advice     │  with gap  │
+                                    │  company, │                    │  analysis  │
+         ▲                          │  role,    │                    └───────────┘
+         │                          │  posting) │
+    just add                        └───────────┘
+    https://...                            │
+                                          │ /rebuild command
+                                          ▼
+         ┌────────────────────────────────────────────────────────────────────┐
+         │                        BUILD PIPELINE                              │
+         └────────────────────────────────────────────────────────────────────┘
+
+    ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+    │ reference/   │     │ schema.cue   │     │ src/cv.toml  │
+    │ GUIDELINES.md│     │ (source of   │     │ src/letter.  │
+    │ EXPERIENCE.md│     │  truth for   │     │     toml     │
+    └──────────────┘     │   types)     │     └──────────────┘
+           │             └──────────────┘            │
+           │                    │                    │
+           └────────────┬───────┴────────────────────┘
+                        ▼
+                 ┌─────────────┐
+                 │   LLM API   │  (Gemini, Claude, Groq)
+                 │ pydantic-ai │
+                 └─────────────┘
+                        │
+                        │ Returns JSON matching schema
+                        ▼
+                 ┌─────────────┐     ┌─────────────┐
+                 │  tomli-w    │────►│  cv.toml    │
+                 │  (writes    │     │  letter.toml│
+                 │   TOML)     │     │  (tailored) │
+                 └─────────────┘     └─────────────┘
+                                            │
+                                            │ just build
+                                            ▼
+         ┌────────────────────────────────────────────────────────────────────┐
+         │                        TYPST PIPELINE                              │
+         └────────────────────────────────────────────────────────────────────┘
+
+    ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+    │   cv.toml    │────►│   cv.json    │────►│   cv.typ     │
+    │              │     │ (Typst can't │     │  (template)  │
+    └──────────────┘     │  read TOML)  │     └──────────────┘
+                         └──────────────┘            │
+                                                     ▼
+                                              ┌──────────────┐
+                                              │   cv.pdf     │
+                                              │  letter.pdf  │
+                                              │ combined.pdf │
+                                              └──────────────┘
 ```
 
-The TOML holds the data, Just orchestrates the commands.
+### Layer 1: CUE as Schema Source of Truth
 
-## Patterns I've Learned
+The first insight was that **the schema should be defined once and generate everything else**. I use [CUE](https://cuelang.org/) for this:
 
-### Pattern 1: Separate Data from Logic
+```cue
+// schema/schema.cue
+#Entry: {
+    name?:        string
+    title?:       string
+    company?:     string
+    position?:    string
+    summary?:     string
+    start_date?:  #Date
+    end_date?:    #ExactDate
+    highlights?: [...string]
+    ...
+}
 
-TOML is for **data**, not **logic**. Don't try to make it do computation:
-
-```toml
-# Good: data
-[database]
-host = "localhost"
-port = 5432
-name = "mydb"
-
-# Bad: trying to do logic in TOML
-# (use a proper language for this)
+#CV: {
+    name?:     string
+    headline?: string
+    keywords: [...string]
+    experience?: [...#Entry]
+    education?: [...#Entry]
+    skills?: [...#SkillEntry]
+    ...
+}
 ```
 
-### Pattern 2: Use Tables for Grouping
+From this single source, I generate:
 
-TOML tables create clear namespaces:
+1. **`schema.json`** — For editor autocompletion and AI tool use
+2. **Validation** — `cue vet` validates TOML against the schema
+3. **Key ordering** — A custom script extracts field order from CUE and adds `x-tombi-table-keys-order` to JSON schema
 
-```toml
-[development]
-debug = true
-log_level = "DEBUG"
+The key ordering script (`schema/order-schema.sh`) was born from frustration. `tombi format` kept reordering my fields alphabetically, destroying the logical grouping I wanted (name before email before phone). The solution:
 
-[production]
-debug = false
-log_level = "WARNING"
+```bash
+# Extract field order from CUE type definitions
+get_field_order() {
+    local type_name="$1"
+    awk "/${type_name}: \\{/,/^}/" "$SCHEMA_CUE" | \
+        grep -E '^[[:space:]]+[a-zA-Z_]' | \
+        sed -E 's/^[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)\??.*/\1/' | \
+        jq -R -s 'split("\n") | map(select(length > 0))'
+}
 ```
 
-### Pattern 3: Arrays of Tables for Repeated Structures
+Now `just schema` generates a JSON schema that tells `tombi` to respect my field order. Change the order in `schema.cue`, and the formatter follows.
 
-For lists of similar items, use array of tables:
+### Layer 2: GitHub Issues as Job Tracking
 
-```toml
-[[servers]]
-name = "alpha"
-ip = "10.0.0.1"
+Each job application is a GitHub Issue. This sounds weird until you realize:
 
-[[servers]]
-name = "beta"
-ip = "10.0.0.2"
+- **Built-in project board** — Track status (New, Applied, Interview, etc.)
+- **Custom fields** — AppliedDate, Company, Role
+- **Comments for iteration** — `/rebuild with more emphasis on Python` triggers a new build
+- **Branch per application** — `45-acme-corp-senior-engineer`
+
+The workflow starts with `just add https://company.com/job`:
+
+```bash
+# Triggers GitHub workflow that:
+# 1. Fetches job posting HTML
+# 2. Sends to LLM (pydantic-ai) to extract structured data
+# 3. Creates GitHub issue with parsed fields
+# 4. Posts career advisor comment analyzing fit
 ```
 
-This is cleaner than nested arrays.
+The AI extracts company, title, location, requirements — all from the raw HTML. No manual data entry.
 
-### Pattern 4: Validate with Schemas
+### Layer 3: AI-Powered Tailoring
 
-Use schema validation tools to catch errors early. For Python, I use `pydantic`:
+This is where TOML really shines. The build script:
+
+1. Loads `reference/GUIDELINES.md` and `reference/EXPERIENCE.md` (the truth about what I've actually done)
+2. Loads current `cv.toml` and `letter.toml` as JSON
+3. Sends everything to an LLM with the job posting
+4. LLM returns structured JSON matching `schema.json`
+5. `tomli-w` converts JSON back to TOML
+
+Why this matters:
+
+- **No TOML syntax errors** — AI returns JSON, Python library handles TOML serialization
+- **Schema enforcement** — pydantic-ai validates against the schema
+- **Multi-provider support** — Gemini, Claude, Groq (OpenAI-compatible) all work identically
+
+The `build.py` script abstracts away model differences:
 
 ```python
-from pydantic import BaseModel
-import tomllib
-
-class Config(BaseModel):
-    debug: bool
-    port: int
-    host: str
-
-with open("config.toml", "rb") as f:
-    data = tomllib.load(f)
-    config = Config(**data)  # Validates types
+def normalize_model_name(model: str) -> str:
+    """Convert model names to pydantic-ai format."""
+    if model.startswith('gemini-'):
+        return f"google-gla:{model}"
+    elif model.startswith('claude-'):
+        return f"anthropic:{model}"
+    elif model.startswith('openai/'):
+        return f"openai:{model.removeprefix('openai/')}"
+    # ...
 ```
 
-## The Tooling Ecosystem
+I can switch between `gemini-3-flash-preview` and `claude-sonnet-4` with a single flag.
 
-TOML has excellent tooling:
+### Layer 4: Typst for Beautiful Output
 
-- **Parsers**: Available in every major language
-- **Formatters**: `taplo` for formatting TOML files
-- **Validators**: Schema validation libraries
-- **Editors**: Great LSP support in VS Code, Neovim, etc.
+[Typst](https://typst.app/) replaced LaTeX for PDF generation. It's faster, has better error messages, and the syntax is more intuitive.
 
-## When NOT to Use TOML
+But there's a problem: **Typst can't read TOML directly**. So the pipeline is:
 
-TOML isn't perfect for everything:
+```
+cv.toml → cv.json → cv.typ → cv.pdf
+```
 
-- **Deep nesting** - TOML gets verbose with deeply nested structures
-- **Dynamic data** - Use JSON for API responses
-- **Markup** - Use Markdown or HTML for content
-- **Complex logic** - Use a real programming language
+The `just build` command handles this:
 
-## The Migration Path
+```just
+# Convert cv.toml to cv.json (Typst can't read TOML directly)
+json-cv: validate-cv
+    uv run python -c "import tomllib, json; json.dump(tomllib.load(open('src/cv.toml', 'rb')), open('src/cv.json', 'w'), indent=2)"
+```
 
-Moving from YAML to TOML:
+The Typst template (`cv.typ`) then reads the JSON:
 
-1. **Start with new projects** - Use TOML from day one
-2. **Convert small files first** - Start with simple configs
-3. **Use converters** - Tools exist to convert YAML → TOML
-4. **Update tooling** - Ensure your tools support TOML
-5. **Document the change** - Help your team understand why
+```typst
+#let cv-data = json("../src/cv.json")
 
-## Conclusion
+// Text replacement for special characters
+#let replace-text(value) = {
+  if type(value) == str {
+    value
+      .replace("Munchen", "München")
+      .replace("Zurich", "Zürich")
+  }
+  // ...
+}
 
-TOML won't solve all your problems, but for configuration files, it's a significant improvement over YAML. The explicitness and type safety prevent entire classes of bugs.
+#let cv = replace-text(cv-data.cv)
+```
 
-My workflow is now:
+I even handle character replacements (Munchen → München) in the template layer, keeping the TOML clean for AI editing.
 
-- **TOML** for configuration and structured data
-- **Markdown** for content and documentation
-- **Just** for task automation
-- **Git** for version control
+### Layer 5: Git Worktrees for Parallel Applications
 
-This stack is simple, explicit, and maintainable. No magic, no surprises, just clear data and clear processes.
+When applying to multiple jobs simultaneously, I use git worktrees:
 
-If you're starting a new project, give TOML a try. Your future self (and your teammates) will appreciate the clarity.
+```bash
+just init 51  # Creates ../cv-51 worktree with branch 51-company-role
+just init 52  # Creates ../cv-52 worktree with branch 52-other-company
+```
+
+Each worktree has its own `cv.toml` and `letter.toml`, tailored for that specific application. The `main` branch holds the master template.
+
+The `run` command even launches Claude agents in parallel:
+
+```bash
+just run 51 52 53  # Opens Claude in each worktree simultaneously
+```
+
+## The Justfile: Command Runner as Glue
+
+The `justfile` orchestrates everything. It's the interface between all these components:
+
+```just
+# Schema management
+schema: schema-ordered         # Full pipeline: CUE → JSON → ordered
+validate: validate-cv validate-letter
+
+# Build pipeline
+build: build-cv build-letter combine
+build-cv: json-cv
+    typst compile --root . --font-path fonts src/cv.typ out/cv.pdf
+
+# Development
+watch:
+    watchexec -w src/cv.toml -w src/cv.typ -w src/letter.toml -- just build
+
+# Application lifecycle
+add url model="flash-3":       # Create issue from job posting
+init issue_number editor="none":  # Create worktree for application
+applied:                       # Mark as submitted, tag, push, update project
+```
+
+The `applied` command encapsulates the entire submission workflow:
+
+```bash
+# Commits with --no-verify (skip linting)
+# Creates tag: 51-company-role-2026-01-07
+# Pushes branch and tag
+# Updates GitHub Project: Status → Applied, AppliedDate → today
+```
+
+## What I Learned
+
+### 1. The Schema Is Everything
+
+Having `schema.cue` as the single source of truth eliminated so many bugs. When I add a new field, it flows through to:
+
+- JSON schema (editor autocomplete)
+- Validation (catches errors early)
+- AI prompts (LLM knows the structure)
+- Typst templates (data always matches)
+
+### 2. AI Works Better with Structure
+
+Asking an LLM to write TOML directly causes syntax errors. Asking it to return JSON that matches a schema? Works almost perfectly. The `pydantic-ai` library even supports tool use for schema enforcement.
+
+### 3. TOML Is the Right Abstraction
+
+TOML sits in the sweet spot between:
+
+- **Too structured** (JSON) — hard to read and edit
+- **Too flexible** (YAML) — too many ways to be wrong
+
+For configuration and structured data that humans need to touch, TOML is ideal.
+
+### 4. Pre-commit Hooks Catch What You Forget
+
+My `.pre-commit-config.yaml` includes:
+
+- `cue vet` validation
+- `tombi format` formatting
+- `cspell` spell checking
+- Auto-regeneration of `schema.json` when CUE changes
+
+The system catches errors before they hit CI.
+
+## The Unexpected Benefits
+
+1. **AI can fix its own mistakes** — When the LLM output is wrong, I comment `/rebuild with feedback` and it tries again
+2. **Version control works** — Every change is a git commit, every application is a branch
+3. **Templates evolve** — Improving `cv.typ` improves all future PDFs
+4. **Provider switching** — Gemini too expensive? Switch to Groq. Claude too slow? Try Gemini Flash.
+
+## Is This Overkill?
+
+Probably. For most people, a Word document works fine.
+
+But if you:
+
+- Apply to many jobs with tailored materials
+- Want to track what you sent where
+- Like automating tedious tasks
+- Want AI to help without hallucinating experience
+
+Then a TOML-first workflow might be worth the investment.
 
 ---
 
 **Tools mentioned:**
 
-- [TOML](https://toml.io/) - Configuration language
-- [Just](https://github.com/casey/just) - Command runner
-- [taplo](https://taplo.tamasfe.dev/) - TOML formatter and LSP
-- [Pydantic](https://docs.pydantic.dev/) - Python data validation
-- [uv](https://github.com/astral-sh/uv) - Fast Python package manager
+- [TOML](https://toml.io/) — Configuration language
+- [CUE](https://cuelang.org/) — Configuration language with types
+- [Typst](https://typst.app/) — Modern typesetting system
+- [Just](https://github.com/casey/just) — Command runner
+- [pydantic-ai](https://ai.pydantic.dev/) — Python AI agent framework
+- [tombi](https://github.com/tombi-toml/tombi) — TOML formatter
+- [uv](https://github.com/astral-sh/uv) — Fast Python package manager
+- [watchexec](https://github.com/watchexec/watchexec) — File watcher
