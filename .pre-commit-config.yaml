@@ -11,8 +11,8 @@ repos:
       - id: prettier
         files: \.md$
 
-  - repo: https://github.com/streetsidesoftware/cspell-cli
-    rev: v9.4.0
-    hooks:
-      - id: cspell # Spell check changed files
-        args: ["--config", "cspell.toml", "--no-must-find-files"]
+  # - repo: https://github.com/streetsidesoftware/cspell-cli
+  #   rev: v9.4.0
+  #   hooks:
+  #     - id: cspell # Spell check changed files
+  #       args: ["--config", "cspell.toml", "--no-must-find-files"]

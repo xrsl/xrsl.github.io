@@ -16,3 +16,5 @@ spell:
 
 prek:
     prek run --all-files
+
+ci: prek spell
