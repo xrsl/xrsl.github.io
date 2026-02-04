@@ -1,10 +1,14 @@
+---
+icon: lucide/wrench
+---
+
 # Amazing Rust Tools for Non-Rust Developers
 
 Rust is slowly and steadily taking over the tools space. It has been [the most admired programming language](https://survey.stackoverflow.co/2025/technology#2-programming-scripting-and-markup-languages) among developers for several years and for a good reason: the blazingly fast speed.
 
 Here are some of my favorites.
 
-## File & Directory Operations
+## :material-folder-search: File & Directory Operations
 
 | Tool                                                      | Replaces | Why It's Better                                                     |
 | --------------------------------------------------------- | -------- | ------------------------------------------------------------------- |
@@ -13,7 +17,7 @@ Here are some of my favorites.
 | **[fd](https://github.com/sharkdp/fd)**                   | `find`   | Intuitive syntax, colorized output, ignores hidden files by default |
 | **[eza](https://github.com/eza-community/eza)**           | `ls`     | Icons, git status, tree view, beautiful colors                      |
 
-## Modern Shell Experience
+## :material-console: Modern Shell Experience
 
 | Tool                                                | What It Does                                                               |
 | --------------------------------------------------- | -------------------------------------------------------------------------- |
@@ -21,7 +25,7 @@ Here are some of my favorites.
 | **[zoxide](https://github.com/ajeetdsouza/zoxide)** | Smarter `cd` — learns your habits and jumps to directories by partial name |
 | **[atuin](https://github.com/atuinsh/atuin)**       | Magical shell history with sync, search, and stats                         |
 
-## Developer Essentials
+## :material-code-braces: Developer Essentials
 
 | Tool                                                  | What It Does                                        |
 | ----------------------------------------------------- | --------------------------------------------------- |
@@ -30,7 +34,7 @@ Here are some of my favorites.
 | **[hyperfine](https://github.com/sharkdp/hyperfine)** | Benchmarking CLI commands with statistical analysis |
 | **[tokei](https://github.com/XAMPPRocky/tokei)**      | Count lines of code, fast                           |
 
-## Python Tooling (by Astral)
+## :material-language-python: Python Tooling (by Astral)
 
 The [Astral](https://astral.sh/) team is rewriting Python's tooling in Rust. If you write Python, these are game-changers:
 
@@ -40,20 +44,20 @@ The [Astral](https://astral.sh/) team is rewriting Python's tooling in Rust. If 
 | **[ruff](https://github.com/astral-sh/ruff)** | `flake8`, `black`, `isort` | Linter + formatter in one, 100x faster than alternatives                  |
 | **[ty](https://github.com/astral-sh/ty)**     | `mypy`, `pyright`          | Type checker that's 10-100x faster, with built-in LSP                     |
 
-## Editors
+## :material-pencil: Editors
 
 | Tool                                            | What It Does                                                                |
 | ----------------------------------------------- | --------------------------------------------------------------------------- |
 | **[fresh](https://github.com/nicholasq/fresh)** | Terminal editor with GUI-like UX — opens 2GB files in 600ms using <40MB RAM |
 
-## Config & Git Hooks
+## :material-cog: Config & Git Hooks
 
 | Tool                                             | Replaces     | Why It's Better                                                         |
 | ------------------------------------------------ | ------------ | ----------------------------------------------------------------------- |
 | **[tombi](https://github.com/tombi-toml/tombi)** | `taplo`      | TOML language server, formatter, and linter with JSON Schema validation |
 | **[prek](https://github.com/j178/prek)**         | `pre-commit` | 10x faster hook installation, single binary, monorepo support           |
 
-## Data & Text Processing
+## :material-file-document-edit: Data & Text Processing
 
 | Tool                                                        | Replaces | Why It's Better                              |
 | ----------------------------------------------------------- | -------- | -------------------------------------------- |
@@ -62,13 +66,13 @@ The [Astral](https://astral.sh/) team is rewriting Python's tooling in Rust. If 
 | **[sd](https://github.com/chmln/sd)**                       | `sed`    | Intuitive find-and-replace, no escaping hell |
 | **[xsv](https://github.com/BurntSushi/xsv)**                | —        | Lightning-fast CSV toolkit                   |
 
-## Quick Install (macOS)
+## :material-apple: Quick Install (macOS)
 
 ```bash
 brew install ripgrep fd eza bat starship zoxide just delta hyperfine sd uv ruff
 ```
 
-## Quick Install (via uv)
+## :material-package-variant: Quick Install (via uv)
 
 If you already have `uv`, you can install the Python-oriented tools:
 
